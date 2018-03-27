@@ -3,11 +3,11 @@ Rubricator - Extensão Google Chrome
 
 Extensão para preenchimento automático de itens de rubrica em tarefas no Moodle.
 
-# Download
+## Download
 
 https://github.com/instituto-infnet/rubricator/archive/master.zip
 
-# Instalação
+## Instalação
 
 Após baixar, descompacte a pasta master.zip
 
