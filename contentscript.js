@@ -15,11 +15,11 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     var tableCriteria = document.getElementById('rubric-criteria');
     var tbody = tableCriteria.children;
     var firstRow = tbody[0].childNodes;
-    console.log(firstRow);
+    //console.log(firstRow);
 
     var btnAddItem = document.getElementById('rubric-criteria-addcriterion');
     var arrayObj = rubrics;
-    var lvlObj = ["Demonstrou competência", "Não demonstrou competência"];
+    var lvlObj = ["Não demonstrou o item de rubrica", "Demonstrou o item de rubrica"];
     var size = arrayObj.length - 1;
 
     // add Campos
