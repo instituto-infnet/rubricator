@@ -17,6 +17,10 @@ No Google Chorme acesse: chrome://extensions/
 * Selecione "Carregar sem Compactação"
 * Selecione a pasta "rubricator-master" descompactada
 
+### Observação
+
+Como não é um plugin publicado, toda vez que que o Google Chorme for iniciado, surgirá uma mensagem. Apenas clique no botão "Cancelar"
+
 ## Uso
 
 Formate os itens de rubrica utilizando o Rubrificator, localizado no Drives de Equipe "DE&TE" em:
@@ -49,4 +53,3 @@ Neste momento os itens de rubrica serão preenchidos.
 
 * Clique em qualquer lugar da tela;
 * Clique no botão "Salvar";
-
