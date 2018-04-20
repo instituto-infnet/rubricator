@@ -5,7 +5,8 @@ Extensão para preenchimento automático de itens de rubrica em tarefas no Moodl
 
 ## Download
 
-https://github.com/instituto-infnet/rubricator/archive/master.zip
+Plugin: https://github.com/instituto-infnet/rubricator/archive/master.zip
+Google Script para Google Planilhas: https://gist.github.com/mvaldetaro/f010f7b60adf44dd9a7fdb177d802662
 
 ## Instalação
 
