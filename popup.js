@@ -1,51 +1,40 @@
-/**
- * Get the current URL.
- *
- * @param {function(string)} callback called when the URL of the current tab
- *   is found.
- */
+document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.getElementById('send'); 
+  const textarea = document.getElementById('rubrics');
 
-function getCurrentTabUrl(callback) {
-  var queryInfo = {
-    active: true,
-    currentWindow: true
-  };
+  if (btn) {
+    btn.addEventListener('click', function () {
+      const data = textarea.value.split('\n').filter(line => line.trim() !== '');
 
-  chrome.tabs.query(queryInfo, (tabs) => {
-    var tab = tabs[0];
-    var url = tab.url;
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-    callback(url);
-  });
+      if (data.length === 0) {
+        console.warn("Nenhuma rubrica para enviar.");
+        return;
+      }
 
-}
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (tabs[0] && tabs[0].id) {
+          if (!tabs[0].url || tabs[0].url.startsWith('chrome://')) {
+            console.error("Não é possível executar nesta página.");
+            return;
+          }
 
-function send(rubricas) {
-  chrome.tabs.getSelected(null, function(tab) {
-    chrome.tabs.sendRequest(tab.id, {action:'modify', data: rubricas}, function(response) {});
-  });
-}
-
-function getValue() {
-  var content = document.getElementById('rubrics').value.split(/\n/);
-  var lines = [];
-
-  for (var i = 0; i < content.length; i++){
-    if (content[i]) {
-      lines.push(content[i]);
-    }
+          chrome.tabs.sendMessage(tabs[0].id, { action: 'modify', data: data }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.error("Aba não pronta ou script não carregado. Tente atualizar a página do Moodle (F5).");
+            } else {
+              console.log("Comando enviado com sucesso!");
+            }
+          });
+        }
+      });
+    });
   }
-  return lines;
-}
+});
 
-document.addEventListener('DOMContentLoaded', () => {
-  getCurrentTabUrl((url) => {
-    var log = document.getElementById('log');
-    var button = document.getElementById("send");
-
-    button.addEventListener("click", function() {
-      console.log("Rubricator!");
-      send(getValue());
-    }, false);
-  });
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === 'show') {
+    const status = document.getElementById('status');
+    if (status) status.innerText = "Pronto!";
+  }
+  sendResponse({ status: "ok" });
 });

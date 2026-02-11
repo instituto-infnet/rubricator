@@ -1,69 +1,74 @@
 var s = document.createElement('script');
-s.src = chrome.extension.getURL('script.js');
-(document.head||document.documentElement).appendChild(s);
+s.src = chrome.runtime.getURL('script.js');
+(document.head || document.documentElement).appendChild(s);
 s.onload = function() {
-  s.parentNode.removeChild(s);
+    s.remove();
 };
 
-chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-  if (request.action == 'modify')
-    var rubrics = [];
-    if(request.data.length > 0){
-      rubrics = request.data;
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'modify') {
+        var arrayObj = request.data || [];
+        var tableCriteria = document.getElementById('rubric-criteria');
+        var btnAddItem = document.getElementById('rubric-criteria-addcriterion');
+
+        if (!tableCriteria || !btnAddItem) return;
+
+        var existingRows = tableCriteria.querySelectorAll('tr.criterion').length;
+        var neededRows = arrayObj.length;
+
+        if (neededRows > existingRows) {
+            for (var i = 0; i < (neededRows - existingRows); i++) {
+                btnAddItem.click();
+            }
+        }
+
+        setTimeout(function() {
+            var rows = tableCriteria.querySelectorAll('tr.criterion');
+            var lvlObj = ["Não demonstrou o item de rubrica", "Demonstrou o item de rubrica"];
+
+            rows.forEach(function(row, h) {
+                if (!arrayObj[h]) return;
+
+                const fillMoodleField = (container, text) => {
+                    const tx = container.querySelector('textarea');
+                    const displayDiv = container.querySelector('.plainvalue');
+                    const displayText = container.querySelector('.textvalue');
+                    
+                    if (tx) {
+                        tx.value = text;
+                        tx.classList.remove('hiddenelement'); 
+                        tx.dispatchEvent(new Event('input', { bubbles: true }));
+                        tx.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    if (displayText) {
+                        displayText.innerText = text;
+                    }
+
+                    if (displayDiv) {
+                        displayDiv.classList.remove('empty'); 
+                    }
+                };
+
+                var descNode = row.querySelector('td.description');
+                if (descNode) fillMoodleField(descNode, arrayObj[h]);
+
+                var levels = row.querySelectorAll('td.level');
+                levels.forEach(function(level, idx) {
+                    if (idx > 1) {
+                        level.remove();
+                    } else if (lvlObj[idx]) {
+                        fillMoodleField(level, lvlObj[idx]);
+                    }
+                });
+            });
+            
+            sendResponse({status: "success"});
+        }, 1000); 
     }
-
-    var tableCriteria = document.getElementById('rubric-criteria');
-    var tbody = tableCriteria.children;
-    var firstRow = tbody[0].childNodes;
-    //console.log(firstRow);
-
-    var btnAddItem = document.getElementById('rubric-criteria-addcriterion');
-    var arrayObj = rubrics;
-    var lvlObj = ["Não demonstrou o item de rubrica", "Demonstrou o item de rubrica"];
-    var size = arrayObj.length - 1;
-
-    // add Campos
-    for(var i = 0; i < size; i++){
-      btnAddItem.click();
-    }
-
-    // remove terceira coluna do critério
-    for(var j = 0; j < arrayObj.length; j++){
-      var level2 = tbody[0].childNodes[j].childNodes[2].childNodes[0].childNodes[0].childNodes[0].childNodes[1];
-      var level3 = tbody[0].childNodes[j].childNodes[2].childNodes[0].childNodes[0].childNodes[0].childNodes[2];
-      level3.remove();
-      level2.classList.add('last');
-    }
-
-    // add texto do item de rubrica e levels
-    for(var h = 0; h < arrayObj.length; h++){
-      var descriptionNode = tbody[0].childNodes[h].childNodes[1];
-      var descriptionNodeTextArea = descriptionNode.childNodes[0];
-      var descriptionNodeSpan = descriptionNode.childNodes[1].childNodes[1];
-
-      var levels = tbody[0].childNodes[h].childNodes[2].childNodes[0].childNodes[0].childNodes[0];
-
-      var d =  levels.childNodes[0];
-      var nd = levels.childNodes[1];
-
-      var levelDTextArea = d.childNodes[0].childNodes[0].childNodes[0];
-      var levelDSpan = d.childNodes[0].childNodes[0].childNodes[1].childNodes[1];
-
-      var levelNDTextArea = nd.childNodes[0].childNodes[0].childNodes[0];
-      var levelNDSpan = nd.childNodes[0].childNodes[0].childNodes[1].childNodes[1];
-
-      descriptionNodeTextArea.innerText = arrayObj[h];
-      descriptionNodeSpan.innerText = arrayObj[h];
-
-      levelDTextArea.innerText = lvlObj[0];
-      levelDSpan.innerText = lvlObj[0];
-
-      levelNDTextArea.innerText = lvlObj[1];
-      levelNDSpan.innerText = lvlObj[1];
-    }
-
-  sendResponse({});
+    return true;
 });
 
-chrome.extension.sendRequest({action:'show'}, function(response) {});
-
+chrome.runtime.sendMessage({action: 'show'}, function(response) {
+    if (chrome.runtime.lastError) {}
+});

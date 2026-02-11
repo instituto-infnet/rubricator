@@ -1,7 +1,9 @@
-function onRequest(request, sender, sendResponse) {
-  if (request.action == 'show')
-    chrome.pageAction.show(sender.tab.id);
-  sendResponse({});
+window.rubricator = {
+  clearAll: function() {
+    const items = document.querySelectorAll('.rubric-criteria .criterion');
+    items.forEach(item => {
+      const deleteBtn = item.querySelector('.delete');
+      if (deleteBtn) deleteBtn.click();
+    });
+  }
 };
-chrome.extension.onRequest.addListener(onRequest);
-

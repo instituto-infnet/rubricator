@@ -48,13 +48,13 @@ footer {
   outline: none;
   border-radius: 2px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
-  background-color: #009688;
+  background-color: #053566;
   color: #ecf0f1;
   transition: background-color .3s;
 }
 
 .btn:hover, .btn:focus {
-  background-color: #4DB6AC;
+  background-color: #1976D2;
 }
 
 .btn > * {
