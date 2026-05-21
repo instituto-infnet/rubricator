@@ -12,8 +12,6 @@ s.onload = function() {
 };
 
 // --- ESTILIZAÇÃO GLOBAL ---
-// Isso resolve o problema visual das quebras de linha "achatadas" após o salvamento.
-// --- ESTILIZAÇÃO AGRESSIVA E ABRANGENTE ---
 const style = document.createElement('style');
 style.innerHTML = `
     /* Ataca a tabela de critérios, descrições e definições de níveis */
@@ -74,11 +72,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
         }
 
-        // Delay para o Moodle renderizar as novas linhas antes de preencher
         setTimeout(function() {
             var rows = tableCriteria.querySelectorAll('tr.criterion');
             
-            // Definição dos níveis baseada na escolha do usuário no Popup
             var lvlObj = ["Não demonstrou o item de rubrica", "Demonstrou o item de rubrica"];
             var targetLevels = 2;
 
@@ -87,7 +83,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 targetLevels = 4;
             }
 
-            // Função interna para preencher e forçar salvamento do campo
             const fillMoodleField = (container, text) => {
                 const tx = container.querySelector('textarea');
                 const displayDiv = container.querySelector('.plainvalue');
@@ -97,11 +92,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     tx.focus();
                     tx.value = text;
                     
-                    // Dispara eventos para o Moodle detectar a "sujeira" do campo e salvar
                     tx.dispatchEvent(new Event('input', { bubbles: true }));
                     tx.dispatchEvent(new Event('change', { bubbles: true }));
                     
-                    // Simula saída do campo para disparar o AJAX de salvamento nativo
                     setTimeout(() => { tx.blur(); }, 50);
                 }
                 
@@ -119,24 +112,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             rows.forEach(function(row, h) {
                 if (!arrayObj[h]) return;
 
-                // Preenche a Descrição do Critério
                 var descNode = row.querySelector('td.description');
                 if (descNode) fillMoodleField(descNode, arrayObj[h]);
 
-                // Gerenciamento de Níveis (Colunas) por linha
                 var btnAddLevel = row.querySelector('input[name*="addlevel"], .addlevel input');
                 
                 var injectLevels = () => {
                     var levels = row.querySelectorAll('td.level');
                     
-                    // Se faltarem colunas, clica no botão "+" e tenta novamente
                     if (levels.length < targetLevels && btnAddLevel) {
                         btnAddLevel.click();
                         setTimeout(injectLevels, 150);
                         return;
                     }
 
-                    // Preenche os níveis existentes
                     levels.forEach(function(level, idx) {
                         if (idx >= targetLevels) {
                             if (request.tipoRubrica !== 'quadruplo') level.remove();
@@ -156,7 +145,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
 });
 
-// Comunicação inicial
 chrome.runtime.sendMessage({action: 'show'}, function(response) {
-    if (chrome.runtime.lastError) { /* Silencia erros de conexão inicial */ }
+    if (chrome.runtime.lastError) 
 });
