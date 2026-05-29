@@ -146,5 +146,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 chrome.runtime.sendMessage({action: 'show'}, function(response) {
-    if (chrome.runtime.lastError) 
+    if (chrome.runtime.lastError) {
+        // ignore
+    }
 });
